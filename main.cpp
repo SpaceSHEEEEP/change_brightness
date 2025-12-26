@@ -30,11 +30,24 @@ const int MAX_VALUE{100};
 const int STEP_SIZE{5};
 const int WINDOW_WIDTH{300};
 const int WINDOW_HEIGHT{60};
+Fl_Window* window{nullptr}; 
 std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();	
 
 std::string outputName = "HDMI-A-1"; // my pc usual output name
 std::string toWrite = "xrandr --output ";
 
+/*
+int clicked_mouse(int event)
+{
+    if (Fl::event_inside(window) == 0)
+    {
+        window->hide(); 
+        return 1;
+    }
+    return 0;
+}
+// scrapped
+*/
 
 void getValue(Fl_Widget* widget)
 {
@@ -77,13 +90,16 @@ int main(int argc, char* argv[])
 	if (argc > 1)
 	{
 		std::string brightness = argv[1];
-		toWrite += brightness;
+		if (std::stod(brightness) > 1) brightness = '1';
+        else if (std::stod(brightness) <= 0.2) brightness = "0.2";
+        toWrite += brightness;
+        std::cout << "executing: " << toWrite << '\n';
 		system(toWrite.c_str());
 		return 0;
 	}
 	// else start-up FLTK
 
-	Fl_Window* window = new Fl_Window(	SCREEN_WIDTH - WINDOW_WIDTH, 
+	window = new Fl_Window(	SCREEN_WIDTH - WINDOW_WIDTH, 
 										SCREEN_HEIGHT - WINDOW_HEIGHT, 
 										WINDOW_WIDTH, 
 										WINDOW_HEIGHT, 
